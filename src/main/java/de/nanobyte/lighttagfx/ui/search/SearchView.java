@@ -35,6 +35,7 @@ public class SearchView extends VBox implements JavaView<SearchViewModel>, Initi
     // todo: replace with CheckListView
     private final CheckTreeView<String> tagSelection = new CheckTreeView<>(new CheckBoxTreeItem<>());
     private final FilteredList<TreeItem<String>> visibleTags = new FilteredList<>(FXCollections.observableArrayList());
+    private final Button searchButton = new Button("Search for files with selected tags");
 
     private final static double DEFAULT_SPACING = 7;
 
@@ -52,7 +53,7 @@ public class SearchView extends VBox implements JavaView<SearchViewModel>, Initi
         final Node tagSelectionNodes = Borders.wrap(new VBox(DEFAULT_SPACING, tagFilter, tagSelection)).lineBorder()
                 .outerPadding(DEFAULT_SPACING, 0, 0, 0).innerPadding(DEFAULT_SPACING).title("Tags").buildAll();
         VBox.setVgrow(tagSelectionNodes, Priority.ALWAYS);
-        getChildren().addAll(tagSelectionNodes, new Button("Search for files with selected tags"));
+        getChildren().addAll(tagSelectionNodes, searchButton);
         VBox.setVgrow(tagSelection, Priority.ALWAYS);
     }
 
@@ -66,5 +67,7 @@ public class SearchView extends VBox implements JavaView<SearchViewModel>, Initi
         EasyBind.subscribe(tagFilter.textProperty(), (final String newValue) -> 
             visibleTags.setPredicate(treeItem -> StringUtils.containsIgnoreCase(treeItem.getValue(), newValue)));
         EasyBind.listBind(tagSelection.getRoot().getChildren(), visibleTags);
+        
+        searchButton.disableProperty().bind(Bindings.isEmpty(tagSelection.getCheckModel().getCheckedItems()));
     }
 }
