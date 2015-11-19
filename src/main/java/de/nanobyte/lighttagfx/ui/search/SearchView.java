@@ -39,19 +39,10 @@ public class SearchView extends VBox implements JavaView<SearchViewModel>, Initi
     private final static double DEFAULT_SPACING = 7;
 
     public SearchView() {
-        Bindings.bindBidirectional(searchFolder.textProperty(), searchFolderChooser.initialDirectoryProperty(),
-                new LambdaStringConverter<>(file -> Optional.ofNullable(file).map(File::toString).orElse(""),
-                        stringRepresentation -> Optional.ofNullable(new File(stringRepresentation))
-                        .filter(File::isDirectory).orElseGet(SystemUtils::getUserHome)));
-        chooseSearchFolderButton.setOnAction((final ActionEvent actionEvent)
-                -> Optional.ofNullable(searchFolderChooser.showDialog(((Node) actionEvent.getTarget()).getScene()
-                        .getWindow()))
+        chooseSearchFolderButton.setOnAction((final ActionEvent actionEvent) -> Optional.ofNullable(
+                searchFolderChooser.showDialog(((Node) actionEvent.getTarget()).getScene().getWindow()))
                 .ifPresent(searchFolderChooser::setInitialDirectory));
-        
-        EasyBind.subscribe(tagFilter.textProperty(), (final String newValue) -> {
-            visibleTags.setPredicate(treeItem -> StringUtils.containsIgnoreCase(treeItem.getValue(), newValue));
-        });
-        EasyBind.listBind(tagSelection.getRoot().getChildren(), visibleTags);
+
         tagSelection.setShowRoot(false);
 
         setSpacing(DEFAULT_SPACING);
@@ -67,5 +58,13 @@ public class SearchView extends VBox implements JavaView<SearchViewModel>, Initi
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
+        Bindings.bindBidirectional(searchFolder.textProperty(), searchFolderChooser.initialDirectoryProperty(),
+                new LambdaStringConverter<>(file -> Optional.ofNullable(file).map(File::toString).orElse(""),
+                        stringRepresentation -> Optional.ofNullable(new File(stringRepresentation))
+                        .filter(File::isDirectory).orElseGet(SystemUtils::getUserHome)));
+
+        EasyBind.subscribe(tagFilter.textProperty(), (final String newValue) -> 
+            visibleTags.setPredicate(treeItem -> StringUtils.containsIgnoreCase(treeItem.getValue(), newValue)));
+        EasyBind.listBind(tagSelection.getRoot().getChildren(), visibleTags);
     }
 }
