@@ -32,9 +32,9 @@ public class SearchView extends VBox implements JavaView<SearchViewModel>, Initi
     private final Button chooseSearchFolderButton = new Button("...");
     private final DirectoryChooser searchFolderChooser = new DirectoryChooser();
     private final TextField tagFilter = new TextField();
+    // todo: replace with CheckListView
     private final CheckTreeView<String> tagSelection = new CheckTreeView<>(new CheckBoxTreeItem<>());
-    private final FilteredList<TreeItem<String>> visibleTags = new FilteredList<>(FXCollections
-            .observableArrayList(new CheckBoxTreeItem<>("lol"), new CheckBoxTreeItem<>("frol")));
+    private final FilteredList<TreeItem<String>> visibleTags = new FilteredList<>(FXCollections.observableArrayList());
 
     private final static double DEFAULT_SPACING = 7;
 
