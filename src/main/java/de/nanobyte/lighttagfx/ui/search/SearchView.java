@@ -5,8 +5,7 @@ import de.saxsys.mvvmfx.InjectViewModel;
 import de.saxsys.mvvmfx.JavaView;
 import java.io.File;
 import java.net.URL;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.transformation.FilteredList;
@@ -35,6 +34,9 @@ public class SearchView extends VBox implements JavaView<SearchViewModel>, Initi
     // todo: replace with CheckListView
     private final CheckTreeView<String> tagSelection = new CheckTreeView<>(new CheckBoxTreeItem<>());
     private final FilteredList<TreeItem<String>> visibleTags = new FilteredList<>(FXCollections.observableArrayList());
+    // must be a class field because else it will be garbage collected to soon
+    private final FilteredList<String> selectedTags = new FilteredList<>(
+            EasyBind.map(tagSelection.getCheckModel().getCheckedItems(), TreeItem<String>::getValue), Objects::nonNull);
     private final Button searchButton = new Button("Search for files with selected tags");
 
     private final static double DEFAULT_SPACING = 7;
@@ -64,10 +66,12 @@ public class SearchView extends VBox implements JavaView<SearchViewModel>, Initi
                         stringRepresentation -> Optional.ofNullable(new File(stringRepresentation))
                         .filter(File::isDirectory).orElseGet(SystemUtils::getUserHome)));
 
-        EasyBind.subscribe(tagFilter.textProperty(), (final String newValue) -> 
-            visibleTags.setPredicate(treeItem -> StringUtils.containsIgnoreCase(treeItem.getValue(), newValue)));
+        EasyBind.subscribe(tagFilter.textProperty(), (final String newValue)
+                -> visibleTags.setPredicate(treeItem -> StringUtils.containsIgnoreCase(treeItem.getValue(), newValue)));
         EasyBind.listBind(tagSelection.getRoot().getChildren(), visibleTags);
-        
+
         searchButton.disableProperty().bind(Bindings.isEmpty(tagSelection.getCheckModel().getCheckedItems()));
+
+        EasyBind.listBind(searchViewModel.getTags(), selectedTags);
     }
 }
