@@ -1,4 +1,5 @@
 apply plugin: 'java'
+apply plugin: 'application'
 
 sourceCompatibility = '1.8'
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
@@ -13,6 +14,7 @@ sourceCompatibility = '1.8'
 if (!hasProperty('mainClass')) {
     ext.mainClass = 'de.nanobyte.lighttagfx.Main'
 }
+mainClassName = ext.mainClass
 
 dependencies {
     compile('org.apache.commons:commons-lang3:3.4')
