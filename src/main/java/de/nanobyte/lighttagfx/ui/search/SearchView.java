@@ -1,6 +1,7 @@
 package de.nanobyte.lighttagfx.ui.search;
 
 import de.nanobyte.javafx.util.LambdaStringConverter;
+import de.nanobyte.lighttagfx.model.Tag;
 import de.saxsys.mvvmfx.InjectViewModel;
 import de.saxsys.mvvmfx.JavaView;
 import java.io.File;
@@ -14,6 +15,7 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.CheckBoxTreeCell;
 import javafx.scene.layout.*;
 import javafx.stage.DirectoryChooser;
 import org.apache.commons.lang3.StringUtils;
@@ -32,22 +34,16 @@ public class SearchView extends VBox implements JavaView<SearchViewModel>, Initi
     private final DirectoryChooser searchFolderChooser = new DirectoryChooser();
     private final TextField tagFilter = new TextField();
     // todo: replace with CheckListView
-    private final CheckTreeView<String> tagSelection = new CheckTreeView<>(new CheckBoxTreeItem<>());
-    private final FilteredList<TreeItem<String>> visibleTags = new FilteredList<>(FXCollections.observableArrayList());
+    private final CheckTreeView<Tag> tagSelection = new CheckTreeView<>(new CheckBoxTreeItem<>());
+    private final FilteredList<TreeItem<Tag>> visibleTags = new FilteredList<>(FXCollections.observableArrayList());
     // must be a class field because else it will be garbage collected to soon
-    private final FilteredList<String> selectedTags = new FilteredList<>(
-            EasyBind.map(tagSelection.getCheckModel().getCheckedItems(), TreeItem<String>::getValue), Objects::nonNull);
+    private final FilteredList<Tag> selectedTags = new FilteredList<>(
+            EasyBind.map(tagSelection.getCheckModel().getCheckedItems(), TreeItem<Tag>::getValue), Objects::nonNull);
     private final Button searchButton = new Button("Search for files with selected tags");
 
     private final static double DEFAULT_SPACING = 7;
 
     public SearchView() {
-        chooseSearchFolderButton.setOnAction((final ActionEvent actionEvent) -> Optional.ofNullable(
-                searchFolderChooser.showDialog(((Node) actionEvent.getTarget()).getScene().getWindow()))
-                .ifPresent(searchFolderChooser::setInitialDirectory));
-
-        tagSelection.setShowRoot(false);
-
         setSpacing(DEFAULT_SPACING);
         setPadding(new Insets(DEFAULT_SPACING));
         getChildren().addAll(new HBox(DEFAULT_SPACING, searchFolder, chooseSearchFolderButton));
@@ -57,21 +53,45 @@ public class SearchView extends VBox implements JavaView<SearchViewModel>, Initi
         VBox.setVgrow(tagSelectionNodes, Priority.ALWAYS);
         getChildren().addAll(tagSelectionNodes, searchButton);
         VBox.setVgrow(tagSelection, Priority.ALWAYS);
+
+        tagSelection.setShowRoot(false);
+        // used CheckTreeView constructor as implementation base
+        tagSelection.setCellFactory(tree -> {
+            return new CheckBoxTreeCell<Tag>(item -> {
+                if (item instanceof CheckBoxTreeItem<?>) {
+                    return ((CheckBoxTreeItem<?>) item).selectedProperty();
+                }
+                return null;
+            }, new LambdaStringConverter<>(treeItem -> treeItem.getValue().getText(),
+                    value -> new CheckBoxTreeItem<>(new Tag(value)))) {
+                @Override
+                public void updateItem(Tag item, boolean empty) {
+                    super.updateItem(item, empty);
+                    Optional.ofNullable(item).ifPresent(tag -> setTextFill(tag.getTextColor()));
+                }
+            };
+        });
     }
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
+        chooseSearchFolderButton.setOnAction((final ActionEvent actionEvent) -> Optional.ofNullable(
+                searchFolderChooser.showDialog(((Node) actionEvent.getTarget()).getScene().getWindow()))
+                .ifPresent(searchFolderChooser::setInitialDirectory));
+
         Bindings.bindBidirectional(searchFolder.textProperty(), searchFolderChooser.initialDirectoryProperty(),
                 new LambdaStringConverter<>(file -> Optional.ofNullable(file).map(File::toString).orElse(""),
                         stringRepresentation -> Optional.ofNullable(new File(stringRepresentation))
                         .filter(File::isDirectory).orElseGet(SystemUtils::getUserHome)));
 
         EasyBind.subscribe(tagFilter.textProperty(), (final String newValue)
-                -> visibleTags.setPredicate(treeItem -> StringUtils.containsIgnoreCase(treeItem.getValue(), newValue)));
+                -> visibleTags.setPredicate(treeItem -> StringUtils.containsIgnoreCase(treeItem.getValue().getText(), newValue)));
         EasyBind.listBind(tagSelection.getRoot().getChildren(), visibleTags);
 
         searchButton.disableProperty().bind(Bindings.isEmpty(tagSelection.getCheckModel().getCheckedItems()));
 
-        EasyBind.listBind(searchViewModel.getTags(), selectedTags);
+        EasyBind.listBind(searchViewModel.getSearchTags(), selectedTags);
+        EasyBind.listBind((List<? super TreeItem<Tag>>) visibleTags.getSource(),
+                EasyBind.map(searchViewModel.getPredefinedTags(), CheckBoxTreeItem<Tag>::new));
     }
 }
