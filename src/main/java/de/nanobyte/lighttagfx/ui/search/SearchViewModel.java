@@ -11,6 +11,10 @@ public class SearchViewModel implements ViewModel {
 
     private final ObservableList<Tag> predefinedTags = FXCollections.observableArrayList();
     private final List<Tag> searchTags = new ArrayList<>();
+
+    public SearchViewModel(final List<Tag> predefinedTags) {
+        this.predefinedTags.addAll(predefinedTags);
+    }
     
     ObservableList<? extends Tag> getPredefinedTags() {
         return predefinedTags;
