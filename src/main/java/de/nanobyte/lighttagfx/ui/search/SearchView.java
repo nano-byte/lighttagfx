@@ -27,7 +27,7 @@ import org.fxmisc.easybind.EasyBind;
 public class SearchView extends VBox implements JavaView<SearchViewModel>, Initializable {
 
     @InjectViewModel
-    private SearchViewModel searchViewModel;
+    private SearchViewModel viewModel;
 
     private final TextField searchFolder = new TextField();
     private final Button chooseSearchFolderButton = new Button("...");
@@ -90,8 +90,8 @@ public class SearchView extends VBox implements JavaView<SearchViewModel>, Initi
 
         searchButton.disableProperty().bind(Bindings.isEmpty(tagSelection.getCheckModel().getCheckedItems()));
 
-        EasyBind.listBind(searchViewModel.getSearchTags(), selectedTags);
+        EasyBind.listBind(viewModel.getSearchTags(), selectedTags);
         EasyBind.listBind((List<? super TreeItem<Tag>>) visibleTags.getSource(),
-                EasyBind.map(searchViewModel.getPredefinedTags(), CheckBoxTreeItem<Tag>::new));
+                EasyBind.map(viewModel.getPredefinedTags(), CheckBoxTreeItem<Tag>::new));
     }
 }
