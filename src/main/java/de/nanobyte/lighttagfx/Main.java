@@ -14,7 +14,7 @@ public class Main extends Application {
 
     @Override
     public void start(final Stage primaryStage) throws Exception {
-        primaryStage.setTitle("LigthTagFX - Search");
+        primaryStage.setTitle("LightTagFX - Search");
         primaryStage.setScene(new Scene(FluentViewLoader.javaView(SearchView.class).load().getView()));
         primaryStage.show();
     }
