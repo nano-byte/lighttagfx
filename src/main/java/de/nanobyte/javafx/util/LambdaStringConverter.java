@@ -9,18 +9,18 @@ public class LambdaStringConverter<T> extends StringConverter<T> {
     private final Function<T, String> toString;
     private final Function<String, T> fromString;
 
-    public LambdaStringConverter(final Function<T, String> toString, final Function<String, T> fromString) {
-        this.toString = requireNonNull(toString);
+    public LambdaStringConverter(final Function<String, T> fromString, final Function<T, String> toString) {
         this.fromString = requireNonNull(fromString);
-    }
-
-    @Override
-    public String toString(final T object) {
-        return toString.apply(object);
+        this.toString = requireNonNull(toString);
     }
 
     @Override
     public T fromString(final String string) {
         return fromString.apply(string);
+    }
+
+    @Override
+    public String toString(final T object) {
+        return toString.apply(object);
     }
 }

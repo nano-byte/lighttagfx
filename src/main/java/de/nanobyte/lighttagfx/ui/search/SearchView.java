@@ -62,8 +62,8 @@ public class SearchView extends VBox implements JavaView<SearchViewModel>, Initi
                     return ((CheckBoxTreeItem<?>) item).selectedProperty();
                 }
                 return null;
-            }, new LambdaStringConverter<>(treeItem -> treeItem.getValue().getText(),
-                    value -> new CheckBoxTreeItem<>(new Tag(value)))) {
+            }, new LambdaStringConverter<>(value -> new CheckBoxTreeItem<>(new Tag(value)),
+                    treeItem -> treeItem.getValue().getText())) {
                 @Override
                 public void updateItem(Tag item, boolean empty) {
                     super.updateItem(item, empty);
@@ -80,9 +80,9 @@ public class SearchView extends VBox implements JavaView<SearchViewModel>, Initi
                 .ifPresent(searchFolderChooser::setInitialDirectory));
 
         Bindings.bindBidirectional(searchFolder.textProperty(), searchFolderChooser.initialDirectoryProperty(),
-                new LambdaStringConverter<>(file -> Optional.ofNullable(file).map(File::toString).orElse(""),
-                        stringRepresentation -> Optional.ofNullable(new File(stringRepresentation))
-                        .filter(File::isDirectory).orElseGet(SystemUtils::getUserHome)));
+                new LambdaStringConverter<>(stringRepresentation -> Optional.ofNullable(new File(stringRepresentation))
+                        .filter(File::isDirectory).orElseGet(SystemUtils::getUserHome),
+                        file -> Optional.ofNullable(file).map(File::toString).orElse("")));
 
         EasyBind.subscribe(tagFilter.textProperty(), (final String newValue)
                 -> visibleTags.setPredicate(treeItem -> StringUtils.containsIgnoreCase(treeItem.getValue().getText(), newValue)));
