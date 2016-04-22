@@ -18,6 +18,7 @@ public class Main extends Application {
     public void start(final Stage primaryStage) throws Exception {
         primaryStage.setTitle("LightTagFX - Search");
         primaryStage.setScene(new Scene(FluentViewLoader.javaView(SearchView.class).viewModel(new SearchViewModel(Collections.EMPTY_LIST)).load().getView()));
+        primaryStage.getScene().getStylesheets().add("css/common_layout.css");
         primaryStage.show();
     }
 }

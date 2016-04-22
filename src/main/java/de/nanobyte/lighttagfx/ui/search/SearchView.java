@@ -12,7 +12,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxTreeCell;
@@ -41,15 +40,10 @@ public class SearchView extends VBox implements JavaView<SearchViewModel>, Initi
             EasyBind.map(tagSelection.getCheckModel().getCheckedItems(), TreeItem<Tag>::getValue), Objects::nonNull);
     private final Button searchButton = new Button("Search for files with selected tags");
 
-    private final static double DEFAULT_SPACING = 7;
-
     public SearchView() {
-        setSpacing(DEFAULT_SPACING);
-        setPadding(new Insets(DEFAULT_SPACING));
-        getChildren().addAll(new HBox(DEFAULT_SPACING, searchFolder, chooseSearchFolderButton));
+        getChildren().addAll(new HBox(searchFolder, chooseSearchFolderButton));
         HBox.setHgrow(searchFolder, Priority.ALWAYS);
-        final Node tagSelectionNodes = Borders.wrap(new VBox(DEFAULT_SPACING, tagFilter, tagSelection)).lineBorder()
-                .outerPadding(DEFAULT_SPACING, 0, 0, 0).innerPadding(DEFAULT_SPACING).title("Tags").buildAll();
+        final Node tagSelectionNodes = Borders.wrap(new VBox(tagFilter, tagSelection)).lineBorder().title("Tags").buildAll();
         VBox.setVgrow(tagSelectionNodes, Priority.ALWAYS);
         getChildren().addAll(tagSelectionNodes, searchButton);
         VBox.setVgrow(tagSelection, Priority.ALWAYS);

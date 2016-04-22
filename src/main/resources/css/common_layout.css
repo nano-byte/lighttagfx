@@ -1,0 +1,11 @@
+.root {   
+    -fx-padding: 10;
+}
+
+VBox {
+    -fx-spacing: 7;
+}
+
+HBox {
+    -fx-spacing: 7;
+}
