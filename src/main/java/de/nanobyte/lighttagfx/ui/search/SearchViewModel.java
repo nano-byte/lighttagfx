@@ -16,7 +16,7 @@ public class SearchViewModel implements ViewModel {
         this.predefinedTags.addAll(predefinedTags);
     }
     
-    ObservableList<? extends Tag> getPredefinedTags() {
+    ObservableList<Tag> getPredefinedTags() {
         return predefinedTags;
     }
     
