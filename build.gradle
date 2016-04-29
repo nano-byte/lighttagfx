@@ -22,6 +22,7 @@ dependencies {
     compile('de.saxsys:mvvmfx:1.4.0')
     compile('org.controlsfx:controlsfx:8.40.10')
     compile('org.fxmisc.easybind:easybind:1.0.3')
+    runtime('org.slf4j:slf4j-simple:1.7.+')
     testCompile('junit:junit:4.12')
 }
 
