@@ -6,12 +6,12 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.util.*;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
+import javafx.scene.layout.AnchorPane;
 import org.fxmisc.easybind.EasyBind;
 
-public class SearchResultView extends Parent implements JavaView<SearchResultViewModel>, Initializable {
+public class SearchResultView extends AnchorPane implements JavaView<SearchResultViewModel>, Initializable {
 
     @InjectViewModel
     private SearchResultViewModel viewModel;
@@ -47,7 +47,11 @@ public class SearchResultView extends Parent implements JavaView<SearchResultVie
                 viewModel.openFileCommand().execute();
             }
         });
-
+        
+        AnchorPane.setTopAnchor(foundFilesTreeView, 0.);
+        AnchorPane.setRightAnchor(foundFilesTreeView, 0.);
+        AnchorPane.setBottomAnchor(foundFilesTreeView, 0.);
+        AnchorPane.setLeftAnchor(foundFilesTreeView, 0.);
         getChildren().add(foundFilesTreeView);
     }
 
