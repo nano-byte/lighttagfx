@@ -1,42 +1,46 @@
 package de.nanobyte.lighttagfx.ui.searchresult;
 
+import de.nanobyte.platform.gui.FileOpener;
+import de.nanobyte.platform.gui.UnsupportedOperationSystemException;
 import de.saxsys.mvvmfx.ViewModel;
 import de.saxsys.mvvmfx.utils.commands.*;
+import java.io.UncheckedIOException;
 import java.nio.file.Path;
+import java.util.Collection;
 import static java.util.Objects.requireNonNull;
-import java.util.Set;
+import java.util.stream.Collectors;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableSet;
-import org.apache.commons.lang3.SystemUtils;
 
 public class SearchResultViewModel implements ViewModel {
 
-    private final ObservableSet<Path> foundFiles;
+    private final ReadOnlyListProperty<Path> foundFiles;
+    private final ObjectProperty<Path> selectedFilePath = new SimpleObjectProperty<>();
+    private final Command openFileCommand = new DelegateCommand(() -> new Action() {
+        @Override
+        protected void action() throws UnsupportedOperationSystemException, UncheckedIOException {
+            fileOpener.setFilePathToOpen(selectedFilePath.get());
+            fileOpener.openWithDefaultApplication();
+        }
+    }, Bindings.isNotNull(selectedFilePath));
+    private final FileOpener fileOpener;
 
-    public SearchResultViewModel(final Set<Path> foundFiles) {
-        this.foundFiles = FXCollections.observableSet(requireNonNull(foundFiles));
+    public SearchResultViewModel(final Collection<Path> foundFiles, final FileOpener fileOpener) {
+        this.foundFiles = new ReadOnlyListWrapper<>(requireNonNull(foundFiles).stream().distinct()
+                .collect(Collectors.toCollection(FXCollections::observableArrayList)));
+        this.fileOpener = requireNonNull(fileOpener);
     }
 
-    public ObservableSet<Path> foundFiles() {
+    ReadOnlyListProperty<Path> foundFiles() {
         return foundFiles;
     }
 
-    Command openFileCommand(final Path path) {
-        return new DelegateCommand(() -> new Action() {
-            @Override
-            protected void action() throws Exception {
-                final String[] openFileCommand;
-                if (SystemUtils.IS_OS_LINUX) {
-                    openFileCommand = new String[]{"xdg-open", path.toString()};
-                } else if (SystemUtils.IS_OS_WINDOWS) {
-                    openFileCommand = new String[]{"start", path.toString()};
-                } else if (SystemUtils.IS_OS_MAC) {
-                    openFileCommand = new String[]{"open", path.toString()};
-                } else {
-                    throw new UnsupportedOperationException("Can't open file. Your platform is not supported.");
-                }
-                new ProcessBuilder(openFileCommand).start();
-            }
-        });
+    ObjectProperty<Path> selectedPath() {
+        return selectedFilePath;
+    }
+
+    Command openFileCommand() {
+        return openFileCommand;
     }
 }
