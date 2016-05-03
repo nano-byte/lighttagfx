@@ -1,5 +1,6 @@
 package de.nanobyte.platform.gui;
 
+import de.nanobyte.platform.UnsupportedOperationSystemException;
 import java.io.UncheckedIOException;
 import java.nio.file.Path;
 import static java.util.Objects.requireNonNull;

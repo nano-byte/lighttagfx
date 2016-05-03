@@ -1,8 +1,8 @@
-package de.nanobyte.platform.gui;
+package de.nanobyte.platform;
 
 public class UnsupportedOperationSystemException extends RuntimeException {
 
-    UnsupportedOperationSystemException(final String operatingSystemName) {
+    public UnsupportedOperationSystemException(final String operatingSystemName) {
         super("The operating system " + operatingSystemName + " is not supported.");
     }
 }
