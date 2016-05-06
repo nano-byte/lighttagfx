@@ -1,7 +1,7 @@
 package de.nanobyte.lighttagfx.ui.searchresult;
 
 import de.nanobyte.platform.gui.FileOpener;
-import de.nanobyte.platform.gui.UnsupportedOperationSystemException;
+import de.nanobyte.platform.UnsupportedOperationSystemException;
 import de.saxsys.mvvmfx.ViewModel;
 import de.saxsys.mvvmfx.utils.commands.*;
 import java.io.UncheckedIOException;
